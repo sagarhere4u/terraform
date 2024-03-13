@@ -166,7 +166,7 @@ resource "azurerm_windows_virtual_machine" "example" {
   }
 }
 
-resource "null_resource" "first" {
+resource "null_resource" "second" {
   provisioner "remote-exec" {
     inline = [
       "ipconfig", 
