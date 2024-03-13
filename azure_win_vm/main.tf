@@ -170,7 +170,8 @@ resource "null_resource" "first" {
   provisioner "remote-exec" {
     inline = [
       "ipconfig", 
-      "dir"
+      "dir",
+      "hostname"
     ]
     connection {
       user = var.admin_username
