@@ -166,13 +166,13 @@ resource "azurerm_windows_virtual_machine" "example" {
   }
 }
 
-resource "null_resource" "third" {
+resource "null_resource" "fourth" {
   provisioner "remote-exec" {
     inline = [
       "ipconfig", 
       "dir",
       "hostname",
-      "powershell.exe Install-WindowsUpdate -MicrosoftUpdate -AcceptAll -AutoReboot"
+      "powershell.exe Get-WindowsUpdate -AcceptAll -Install -AutoReboot"
     ]
     connection {
       user = var.admin_username
