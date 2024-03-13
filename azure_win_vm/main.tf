@@ -172,6 +172,7 @@ resource "null_resource" "fourth" {
       "ipconfig", 
       "dir",
       "hostname",
+      "powershell.exe Install-Module -Name PSWindowsUpdate -Force",
       "powershell.exe Get-WindowsUpdate -AcceptAll -Install -AutoReboot"
     ]
     connection {
