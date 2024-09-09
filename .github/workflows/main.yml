@@ -5,4 +5,4 @@ jobs:
     if: github.repository == 'sagarhere4u/terraform'
     runs-on: ubuntu-latest
     steps:
-      - run: terraform init
+      - run: cd azure_webserver ; terraform init ; terraform validate ; sudo terraform plan ; sudo terraform apply --auto-approve
