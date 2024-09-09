@@ -1,0 +1,8 @@
+name: example-workflow
+on: [push]
+jobs:
+  production-deploy:
+    if: github.repository == 'sagarhere4u/terraform'
+    runs-on: ubuntu-latest
+    steps:
+      - run: terraform init
