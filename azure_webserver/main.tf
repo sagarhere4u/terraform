@@ -5,7 +5,7 @@ terraform {
   required_providers {
     azurerm = {
       source = "hashicorp/azurerm"
-      version = "3.61.0"
+      version = "4.0.1"
     }
   }
 }
@@ -37,6 +37,36 @@ provider "azurerm" {
 resource "azurerm_resource_group" "main" {
   name     = "${trimspace(data.template_file.prefix.rendered)}-rg"
   location = var.location
+}
+
+resource "azurerm_network_security_group" "main" {
+  name                = "${trimspace(data.template_file.prefix.rendered)}-sg"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+
+  security_rule {
+    name                       = "inrule"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "outrule"
+    priority                   = 100
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
 }
 
 resource "azurerm_virtual_network" "main" {
@@ -73,6 +103,11 @@ resource "azurerm_network_interface" "main" {
   }
 }
 
+resource "azurerm_network_interface_security_group_association" "main" {
+  network_interface_id      = azurerm_network_interface.main.id
+  network_security_group_id = azurerm_network_security_group.main.id
+}
+
 resource "azurerm_linux_virtual_machine" "main" {
   name                            = "${trimspace(data.template_file.prefix.rendered)}-web-vm"
   resource_group_name             = azurerm_resource_group.main.name
@@ -87,8 +122,8 @@ resource "azurerm_linux_virtual_machine" "main" {
 
   source_image_reference {
     publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "18.04-LTS"
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts"
     version   = "latest"
   }
 
@@ -97,25 +132,5 @@ resource "azurerm_linux_virtual_machine" "main" {
     caching              = "ReadWrite"
   }
 
-  provisioner "file" {
-    source = "apache2.sh"
-    destination = "/tmp/apache2.sh"
-    connection {
-      host     = self.public_ip_address
-      user     = self.admin_username
-      password = self.admin_password
-    }
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "chmod +x /tmp/apache2.sh",
-      "/tmp/apache2.sh",
-    ]
-    connection {
-      host     = self.public_ip_address
-      user     = self.admin_username
-      password = self.admin_password
-    }
-  }
+  user_data = filebase64("apache2.sh")
 }
