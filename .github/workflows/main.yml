@@ -1,0 +1,52 @@
+name: "Terraform with GitHub Actions"
+
+on:
+ push:
+   branches:
+   - main
+   paths:
+   - terraform/**
+ pull_request:
+   branches:
+   - main
+   paths:
+   - terraform/**
+
+env:
+ # verbosity setting for Terraform logs
+ TF_LOG: INFO
+
+jobs:
+ terraform:
+   name: "Terraform with GitHub Actions"
+   runs-on: ubuntu-latest
+   defaults:
+     run:
+       shell: bash
+       # We keep Terraform files in the terraform directory.
+       working-directory: ./local_file
+
+   steps:
+     - name: Checkout the repository to the runner
+       uses: actions/checkout@v2
+
+     - name: Setup Terraform with specified version on the runner
+       uses: hashicorp/setup-terraform@v2
+       with:
+         terraform_version: 1.9.5
+
+     - name: Terraform init
+       id: init
+       run: terraform init    
+
+     - name: Terraform validate
+       id: validate
+       run: terraform validate
+
+     - name: Terraform plan
+       id: plan
+       run: terraform plan -no-color -input=false
+
+     - name: Terraform Apply
+       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+       run: terraform apply -auto-approve -input=false
