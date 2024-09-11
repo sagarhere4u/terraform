@@ -3,7 +3,7 @@
 sudo apt-get update && sudo apt-get -y install apache2
 
 
-echo '<!doctype html><html><body><h1>Hello, Welcome to DevOps World for IaC. 1st April,2024!</h1></body></html>' | sudo tee /var/www/html/index.html
+echo '<!doctype html><html><body><h1>Hello, Welcome to DevOps World for IaC. 11th September,2024!</h1></body></html>' | sudo tee /var/www/html/index.html
 
 sudo systemctl restart apache2
 sudo systemctl enable apache2
