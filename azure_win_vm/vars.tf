@@ -3,7 +3,7 @@ variable "location" {
 }
 
 variable "address_space" {
-  default = ["10.0.0.0/16"]
+  default = ["10.1.0.0/16"]
 }
 
 variable "address_prefixes" {
